@@ -1,19 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../lib/firebase"; // sesuaikan path
+import { collection, getDocs, getFirestore } from "firebase/firestore";
+import app from "../../lib/firebase";
+
+const db = getFirestore(app);
 
 export default function Dashboard() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
-      const querySnapshot = await getDocs(collection(db, "incidents"));
+      const querySnapshot = await getDocs(collection(db, "incidents")); // nanti kita cek ini
       const result = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+      console.log(result);
       setData(result);
     }
 
@@ -24,14 +27,15 @@ export default function Dashboard() {
     <div style={{ padding: 20 }}>
       <h1>Dashboard K3</h1>
 
-      {data.map(item => (
-        <div key={item.id} style={{ border: "1px solid #ccc", margin: 10, padding: 10 }}>
-          <h3>{item.judul}</h3>
-          <p>📍 {item.lokasi}</p>
-          <p>📅 {item.tanggal}</p>
-          <p>{item.deskripsi}</p>
-        </div>
-      ))}
+      {data.length === 0 ? (
+        <p>Belum ada data...</p>
+      ) : (
+        data.map(item => (
+          <pre key={item.id}>
+            {JSON.stringify(item, null, 2)}
+          </pre>
+        ))
+      )}
     </div>
   );
-}
+              }
