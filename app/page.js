@@ -9,11 +9,13 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         router.push("/login");
       }
     });
+
+    return () => unsubscribe();
   }, []);
 
   const handleLogout = async () => {
@@ -35,6 +37,17 @@ export default function Home() {
         </button>
 
         <button onClick={() => router.push("/dashboard")}>
+          📊 Dashboard
+        </button>
+
+        <button onClick={handleLogout}>
+          🚪 Logout
+        </button>
+
+      </div>
+    </main>
+  );
+}        <button onClick={() => router.push("/dashboard")}>
           📊 Dashboard
         </button>
 
