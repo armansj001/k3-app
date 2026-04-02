@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "../../lib/authClient";
 
+export const dynamic = "force-dynamic";
 export default function Login() {
   const router = useRouter();
 
