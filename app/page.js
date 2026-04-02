@@ -1,39 +1,41 @@
 "use client";
 
-import { useState } from "react";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
-import app from "../lib/firebase";
+import { useEffect, useState } from "react";
+import { collection, getDocs, getFirestore } from "firebase/firestore";
+import app from "../../lib/firebase";
 
-export default function Home() {
-  const [title, setTitle] = useState("");
+const db = getFirestore(app);
 
-  const submit = async () => {
-    const db = getFirestore(app);
+export default function Dashboard() {
+  const [data, setData] = useState([]);
 
-    await addDoc(collection(db, "incidents"), {
-      title: title,
-      createdAt: new Date()
-    });
+  useEffect(() => {
+    async function fetchData() {
+      const querySnapshot = await getDocs(collection(db, "incidents")); // nanti kita cek ini
+      const result = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      console.log(result);
+      setData(result);
+    }
 
-    alert("Laporan berhasil dikirim!");
-    setTitle("");
-  };
+    fetchData();
+  }, []);
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>Aplikasi K3</h1>
+      <h1>Dashboard K3</h1>
 
-      <input
-        placeholder="Judul kejadian"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-
-      <br /><br />
-
-      <button onClick={submit}>
-        Kirim Laporan
-      </button>
+      {data.length === 0 ? (
+        <p>Belum ada data...</p>
+      ) : (
+        data.map(item => (
+          <pre key={item.id}>
+            {JSON.stringify(item, null, 2)}
+          </pre>
+        ))
+      )}
     </div>
   );
-}
+                }
