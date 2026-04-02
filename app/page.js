@@ -7,6 +7,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 export default function Home() {
   const [title, setTitle] = useState("");
 
+  // 🔥 INI handleSubmit (fungsi kirim ke Firestore)
   const handleSubmit = async () => {
     if (!title) {
       alert("Judul tidak boleh kosong");
@@ -22,8 +23,8 @@ export default function Home() {
       alert("Berhasil disimpan ✅");
       setTitle("");
     } catch (error) {
-      console.error(error);
-      alert("Gagal menyimpan ❌");
+      console.error("ERROR FIRESTORE:", error);
+      alert(error.message); // 🔥 biar kelihatan error asli
     }
   };
 
@@ -50,4 +51,4 @@ export default function Home() {
       </a>
     </main>
   );
-    }
+        }
