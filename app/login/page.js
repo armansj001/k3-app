@@ -13,12 +13,19 @@ export default function Login() {
     e.preventDefault();
 
     try {
+      // 🔥 import hanya saat klik login (client only)
+      const { signInWithEmailAndPassword, getAuth } = await import("firebase/auth");
+      const { default: app } = await import("../../lib/firebase");
+
+      const auth = getAuth(app);
+
       await signInWithEmailAndPassword(auth, email, password);
+
       alert("Login berhasil ✅");
       router.push("/");
     } catch (err) {
-      alert("Login gagal ❌");
       console.error(err);
+      alert("Login gagal ❌: " + err.message);
     }
   };
 
@@ -26,7 +33,10 @@ export default function Login() {
     <main style={{ padding: 20 }}>
       <h1>Login K3</h1>
 
-      <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <form
+        onSubmit={handleLogin}
+        style={{ display: "flex", flexDirection: "column", gap: 10 }}
+      >
         <input
           type="email"
           placeholder="Email"
@@ -35,6 +45,15 @@ export default function Login() {
 
         <input
           type="password"
+          placeholder="Password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button type="submit">Login</button>
+      </form>
+    </main>
+  );
+        }          type="password"
           placeholder="Password"
           onChange={(e) => setPassword(e.target.value)}
         />
