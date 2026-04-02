@@ -1,25 +1,34 @@
 "use client";
 
-import { useEffect } from "react";
-import { auth } from "../lib/firebaseAuth";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
   const router = useRouter();
+  const [auth, setAuth] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.push("/login");
-      }
-    });
+    // 🔥 import firebase auth DI CLIENT SAJA
+    const loadAuth = async () => {
+      const { getAuth, onAuthStateChanged, signOut } = await import("firebase/auth");
+      const { default: app } = await import("../lib/firebase");
 
-    return () => unsubscribe();
+      const authInstance = getAuth(app);
+      setAuth({ authInstance, onAuthStateChanged, signOut });
+
+      onAuthStateChanged(authInstance, (user) => {
+        if (!user) {
+          router.push("/login");
+        }
+      });
+    };
+
+    loadAuth();
   }, []);
 
   const handleLogout = async () => {
-    await signOut(auth);
+    if (!auth) return;
+    await auth.signOut(auth.authInstance);
     router.push("/login");
   };
 
@@ -30,11 +39,24 @@ export default function Home() {
 
       <hr />
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <button onClick={() => router.push("/report")}>
+        Buat Laporan
+      </button>
 
-        <button onClick={() => router.push("/report")}>
-          Buat Laporan
-        </button>
+      <br /><br />
+
+      <button onClick={() => router.push("/dashboard")}>
+        Dashboard
+      </button>
+
+      <br /><br />
+
+      <button onClick={handleLogout}>
+        Logout
+      </button>
+    </main>
+  );
+                 }        </button>
 
         <button onClick={() => router.push("/dashboard")}>
           Dashboard
