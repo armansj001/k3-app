@@ -1,41 +1,29 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
-import app from "../../lib/firebase";
-
-const db = getFirestore(app);
-
-export default function Dashboard() {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    async function fetchData() {
-      const querySnapshot = await getDocs(collection(db, "incidents")); // nanti kita cek ini
-      const result = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      console.log(result);
-      setData(result);
-    }
-
-    fetchData();
-  }, []);
-
+export default function Home() {
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Dashboard K3</h1>
+    <main style={{ padding: 20 }}>
+      <h1>Aplikasi K3</h1>
 
-      {data.length === 0 ? (
-        <p>Belum ada data...</p>
-      ) : (
-        data.map(item => (
-          <pre key={item.id}>
-            {JSON.stringify(item, null, 2)}
-          </pre>
-        ))
-      )}
-    </div>
+      <p>
+        Sistem pelaporan dan monitoring keselamatan kerja (K3)
+      </p>
+
+      <hr style={{ margin: "20px 0" }} />
+
+      <h2>Menu</h2>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <a href="/dashboard">
+          <button style={{ padding: 10, width: "100%" }}>
+            📊 Dashboard
+          </button>
+        </a>
+
+        <a href="/report">
+          <button style={{ padding: 10, width: "100%" }}>
+            ➕ Buat Laporan
+          </button>
+        </a>
+      </div>
+    </main>
   );
-                }
+}
