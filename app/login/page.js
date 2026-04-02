@@ -1,10 +1,10 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "../../lib/authClient";
 
-export const dynamic = "force-dynamic";
 export default function Login() {
   const router = useRouter();
 
@@ -15,7 +15,11 @@ export default function Login() {
     e.preventDefault();
 
     try {
+      // 🔥 IMPORT DI SINI (BUKAN DI ATAS)
+      const { auth } = await import("../../lib/authClient");
+
       await auth.signInWithEmailAndPassword(email, password);
+
       alert("Login berhasil ✅");
       router.push("/");
     } catch (err) {
