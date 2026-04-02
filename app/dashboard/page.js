@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../firebase"; // sesuaikan path
+import { db } from "../../lib/firebase"; // sesuaikan path
 
 export default function Dashboard() {
   const [data, setData] = useState([]);
