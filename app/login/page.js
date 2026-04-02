@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { auth } from "../../lib/authClient";
 
 export default function Login() {
   const router = useRouter();
@@ -13,18 +14,12 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const { signInWithEmailAndPassword, getAuth } = await import("firebase/auth");
-      const { default: app } = await import("../../lib/firebase");
-
-      const auth = getAuth(app);
-
-      await signInWithEmailAndPassword(auth, email, password);
-
+      await auth.signInWithEmailAndPassword(email, password);
       alert("Login berhasil ✅");
       router.push("/");
     } catch (err) {
+      alert("Login gagal ❌");
       console.error(err);
-      alert("Login gagal ❌: " + err.message);
     }
   };
 
@@ -39,14 +34,12 @@ export default function Login() {
         <input
           type="email"
           placeholder="Email"
-          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
           type="password"
           placeholder="Password"
-          value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
