@@ -1,54 +1,48 @@
 "use client";
 
-import { useState } from "react";
-import { db } from "../lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { useEffect } from "react";
+import { auth } from "../lib/firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const [title, setTitle] = useState("");
+  const router = useRouter();
 
-  // 🔥 INI handleSubmit (fungsi kirim ke Firestore)
-  const handleSubmit = async () => {
-    if (!title) {
-      alert("Judul tidak boleh kosong");
-      return;
-    }
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push("/login");
+      }
+    });
+  }, []);
 
-    try {
-      await addDoc(collection(db, "incidents"), {
-        title: title,
-        createdAt: serverTimestamp(),
-      });
-
-      alert("Berhasil disimpan ✅");
-      setTitle("");
-    } catch (error) {
-      console.error("ERROR FIRESTORE:", error);
-      alert(error.message); // 🔥 biar kelihatan error asli
-    }
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push("/login");
   };
 
   return (
     <main style={{ padding: 20 }}>
-      <h1>Aplikasi K3</h1>
+      <h1>🏭 Aplikasi K3</h1>
+      <p>Selamat datang 👷‍♂️</p>
 
-      <input
-        placeholder="Judul kejadian"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
+      <hr />
 
-      <br /><br />
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
 
-      <button onClick={handleSubmit}>
-        Kirim Laporan
-      </button>
+        <button onClick={() => router.push("/report")}>
+          📄 Buat Laporan
+        </button>
 
-      <hr style={{ margin: "20px 0" }} />
+        <button onClick={() => router.push("/dashboard")}>
+          📊 Dashboard
+        </button>
 
-      <a href="/dashboard">
-        <button>Lihat Dashboard</button>
-      </a>
+        <button onClick={handleLogout}>
+          🚪 Logout
+        </button>
+
+      </div>
     </main>
   );
-        }
+  }
