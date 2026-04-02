@@ -1,40 +1,50 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
-import app from "../../lib/firebase";
-
-const db = getFirestore(app);
+import { db } from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 export default function Dashboard() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
-      const querySnapshot = await getDocs(collection(db, "incidents")); // nanti kita cek ini
-      const result = querySnapshot.docs.map(doc => ({
+      const querySnapshot = await getDocs(collection(db, "incidents"));
+      const list = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-      console.log(result);
-      setData(result);
+      setData(list);
     }
 
     fetchData();
   }, []);
 
   return (
-    <div style={{ padding: 20 }}>
+    <main style={{ padding: 20 }}>
       <h1>Dashboard K3</h1>
 
       {data.length === 0 ? (
-        <p>Belum ada data...</p>
+        <p>Belum ada data</p>
       ) : (
-        data.map(item => (
-          <pre key={item.id}>
-            {JSON.stringify(item, null, 2)}
-          </pre>
-        ))
+        <ul>
+          {data.map((item) => (
+            <li key={item.id}>
+              <b>{item.title}</b>
+              <br />
+              <small>
+                {item.createdAt?.seconds
+                  ? new Date(item.createdAt.seconds * 1000).toLocaleString()
+                  : "-"}
+              </small>
+              <hr />
+            </li>
+          ))}
+        </ul>
+      )}
+    </main>
+  );
+}        ))
       )}
     </div>
   );
