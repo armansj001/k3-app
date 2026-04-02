@@ -13,7 +13,6 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      // 🔥 import hanya saat klik login (client only)
       const { signInWithEmailAndPassword, getAuth } = await import("firebase/auth");
       const { default: app } = await import("../../lib/firebase");
 
@@ -40,21 +39,14 @@ export default function Login() {
         <input
           type="email"
           placeholder="Email"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
           type="password"
           placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <button type="submit">Login</button>
-      </form>
-    </main>
-  );
-        }          type="password"
-          placeholder="Password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
