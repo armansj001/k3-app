@@ -8,13 +8,16 @@ export default function Home() {
   const [auth, setAuth] = useState(null);
 
   useEffect(() => {
-    // 🔥 import firebase auth DI CLIENT SAJA
     const loadAuth = async () => {
       const { getAuth, onAuthStateChanged, signOut } = await import("firebase/auth");
       const { default: app } = await import("../lib/firebase");
 
       const authInstance = getAuth(app);
-      setAuth({ authInstance, onAuthStateChanged, signOut });
+
+      setAuth({
+        authInstance,
+        signOut,
+      });
 
       onAuthStateChanged(authInstance, (user) => {
         if (!user) {
@@ -39,24 +42,10 @@ export default function Home() {
 
       <hr />
 
-      <button onClick={() => router.push("/report")}>
-        Buat Laporan
-      </button>
-
-      <br /><br />
-
-      <button onClick={() => router.push("/dashboard")}>
-        Dashboard
-      </button>
-
-      <br /><br />
-
-      <button onClick={handleLogout}>
-        Logout
-      </button>
-    </main>
-  );
-                 }        </button>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <button onClick={() => router.push("/report")}>
+          Buat Laporan
+        </button>
 
         <button onClick={() => router.push("/dashboard")}>
           Dashboard
@@ -65,7 +54,6 @@ export default function Home() {
         <button onClick={handleLogout}>
           Logout
         </button>
-
       </div>
     </main>
   );
