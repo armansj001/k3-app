@@ -1,0 +1,7 @@
+{
+  "name": "k3-app",
+  "private": true,
+  "scripts": {
+    "build": "next build"
+  }
+}
