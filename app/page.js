@@ -25,37 +25,26 @@ export default function Home() {
 
   return (
     <main style={{ padding: 20 }}>
-      <h1>🏭 Aplikasi K3</h1>
-      <p>Selamat datang 👷‍♂️</p>
+      <h1>Aplikasi K3</h1>
+      <p>Selamat datang</p>
 
       <hr />
 
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
 
         <button onClick={() => router.push("/report")}>
-          📄 Buat Laporan
+          Buat Laporan
         </button>
 
         <button onClick={() => router.push("/dashboard")}>
-          📊 Dashboard
+          Dashboard
         </button>
 
         <button onClick={handleLogout}>
-          🚪 Logout
+          Logout
         </button>
 
       </div>
     </main>
   );
-}        <button onClick={() => router.push("/dashboard")}>
-          📊 Dashboard
-        </button>
-
-        <button onClick={handleLogout}>
-          🚪 Logout
-        </button>
-
-      </div>
-    </main>
-  );
-  }
+    }
