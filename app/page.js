@@ -1,60 +1,41 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
   const router = useRouter();
-  const [auth, setAuth] = useState(null);
 
   useEffect(() => {
-    const loadAuth = async () => {
-      const { getAuth, onAuthStateChanged, signOut } = await import("firebase/auth");
-      const { default: app } = await import("../lib/firebase");
+    const init = async () => {
+      const firebase = await import("../lib/firebase");
+      const authModule = await import("firebase/auth");
 
-      const authInstance = getAuth(app);
+      const auth = authModule.getAuth(firebase.default);
 
-      setAuth({
-        authInstance,
-        signOut,
-      });
-
-      onAuthStateChanged(authInstance, (user) => {
+      authModule.onAuthStateChanged(auth, (user) => {
         if (!user) {
           router.push("/login");
         }
       });
     };
 
-    loadAuth();
+    init();
   }, []);
-
-  const handleLogout = async () => {
-    if (!auth) return;
-    await auth.signOut(auth.authInstance);
-    router.push("/login");
-  };
 
   return (
     <main style={{ padding: 20 }}>
       <h1>Aplikasi K3</h1>
-      <p>Selamat datang</p>
 
-      <hr />
+      <button onClick={() => router.push("/report")}>
+        Buat Laporan
+      </button>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        <button onClick={() => router.push("/report")}>
-          Buat Laporan
-        </button>
+      <br /><br />
 
-        <button onClick={() => router.push("/dashboard")}>
-          Dashboard
-        </button>
-
-        <button onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
+      <button onClick={() => router.push("/dashboard")}>
+        Dashboard
+      </button>
     </main>
   );
-    }
+}
