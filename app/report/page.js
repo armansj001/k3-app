@@ -16,16 +16,32 @@ export default function Report() {
     e.preventDefault();
 
     try {
-      // 🔥 lazy import (penting)
-      const { db, auth } = await import("../../lib/authClient");
+      // 🔥 lazy import (hindari error vercel)
+      const { db, auth, serverTimestamp } = await import("../../lib/authClient");
+
+      const user = auth.currentUser;
 
       await db.collection("reports").add({
         judul,
         lokasi,
         deskripsi,
-        user: auth.currentUser?.email || "unknown",
-        createdAt: new Date(),
-        status: "open"
+
+        status: "open",
+
+        // ✅ TIMESTAMP (SERVER)
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+
+        // ✅ TRACEABILITY
+        createdBy: {
+          uid: user?.uid || "unknown",
+          email: user?.email || "unknown",
+        },
+
+        updatedBy: {
+          uid: user?.uid || "unknown",
+          email: user?.email || "unknown",
+        },
       });
 
       alert("Laporan berhasil dikirim ✅");
@@ -46,17 +62,23 @@ export default function Report() {
       >
         <input
           placeholder="Judul Bahaya"
+          value={judul}
           onChange={(e) => setJudul(e.target.value)}
+          required
         />
 
         <input
           placeholder="Lokasi"
+          value={lokasi}
           onChange={(e) => setLokasi(e.target.value)}
+          required
         />
 
         <textarea
           placeholder="Deskripsi"
+          value={deskripsi}
           onChange={(e) => setDeskripsi(e.target.value)}
+          required
         />
 
         <button type="submit">Kirim Laporan</button>
