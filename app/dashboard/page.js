@@ -8,38 +8,57 @@ export default function Dashboard() {
   const [reports, setReports] = useState([]);
 
   useEffect(() => {
-    const loadData = async () => {
-      const { db } = await import("../../lib/authClient");
-
-      const snapshot = await db.collection("reports").get();
-
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      setReports(data);
-    };
-
     loadData();
   }, []);
 
-  const updateStatus = async (id, status) => {
+  const loadData = async () => {
     const { db } = await import("../../lib/authClient");
 
-    await db.collection("reports").doc(id).update({
-      status,
-    });
-
-    alert("Status diupdate ✅");
-
-    // refresh data
     const snapshot = await db.collection("reports").get();
+
     const data = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
+
     setReports(data);
+  };
+
+  const updateStatus = async (id, status) => {
+    try {
+      const { db, auth, serverTimestamp, arrayUnion } = await import("../../lib/authClient");
+
+      const user = auth.currentUser;
+
+      await db.collection("reports").doc(id).update({
+        status,
+
+        // ✅ TIMESTAMP
+        updatedAt: serverTimestamp(),
+
+        // ✅ SIAPA YANG UPDATE
+        updatedBy: {
+          uid: user?.uid || "unknown",
+          email: user?.email || "unknown",
+        },
+
+        // ✅ HISTORY LOG (AUDIT TRAIL)
+        history: arrayUnion({
+          action: "status_update",
+          status,
+          at: new Date(), // boleh client time untuk log tambahan
+          by: user?.email || "unknown",
+        }),
+      });
+
+      alert("Status diupdate ✅");
+
+      // 🔄 reload data
+      loadData();
+    } catch (err) {
+      console.error(err);
+      alert("Gagal update status ❌");
+    }
   };
 
   return (
@@ -58,7 +77,17 @@ export default function Dashboard() {
           <h3>{r.judul}</h3>
           <p><b>Lokasi:</b> {r.lokasi}</p>
           <p>{r.deskripsi}</p>
+
           <p>Status: <b>{r.status}</b></p>
+
+          {/* ✅ INFO TRACEABILITY */}
+          <p style={{ fontSize: 12, color: "gray" }}>
+            Dibuat oleh: {r.createdBy?.email || "-"}
+          </p>
+
+          <p style={{ fontSize: 12, color: "gray" }}>
+            Terakhir update: {r.updatedBy?.email || "-"}
+          </p>
 
           {r.status === "open" && (
             <button onClick={() => updateStatus(r.id, "closed")}>
@@ -69,4 +98,4 @@ export default function Dashboard() {
       ))}
     </main>
   );
-}
+        }
